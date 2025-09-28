@@ -10,8 +10,6 @@ Tecnologías: Python, PLY.
 
 
 ## Estructura
-¡Perfecto! 🚀
-Con la estructura que armás en tu script, lo que tenés es una **arquitectura típica de proyecto educativo modular**. Te detallo qué debería ir en cada carpeta (ejemplo para un proyecto en **JavaScript/TypeScript o similar**, pero podés adaptarlo a tu stack):
 
 ---
 
@@ -104,7 +102,3 @@ Organización por materias o áreas temáticas.
   * Automatizaciones de limpieza o instalación.
 
 ---
-
-👉 Con esta organización, tu proyecto queda **modular, escalable y mantenible**.
-
-¿Querés que te arme un **README.md** inicial donde se explique esta estructura carpeta por carpeta, listo para poner en tu repo?
