@@ -1,0 +1,25 @@
+@startuml
+
+class Usuario {
+  +id: int
+  +nombre: string
+  +registrar()
+  +iniciarSesion()
+}
+
+class Curso {
+  +id: int
+  +titulo: string
+  +descripcion: string
+}
+
+class Leccion {
+  +id: int
+  +titulo: string
+  +contenido: string
+}
+
+Usuario --> Curso : "se inscribe"
+Curso --> Leccion : "contiene"
+
+@enduml
