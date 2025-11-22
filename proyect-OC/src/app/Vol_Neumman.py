@@ -37,116 +37,75 @@ class Memoria:
 
 class VonNeuman:
     def __init__(self):
-        self._ACC = BitArray(uint=0, length=12)   # Acumulador
-        self._F   = BitArray(uint=0, length=1)    # Registro de sobrecarga
-        self._GPR = BitArray(uint=0, length=12)   # Registro general
-        self._M   = BitArray(uint=0, length=12)   # Registro de memoria
-        self._RAM = BitArray(uint=0, length=12)   # RAM (ejemplo 1 palabra)
+        # Registros públicos (usar directamente cpu.ACC, cpu.F, ...)
+        self.ACC = BitArray(uint=0, length=12)   # Acumulador (12 bits)
+        self.F   = BitArray(uint=0, length=1)    # Flag de overflow (1 bit)
+        self.GPR = BitArray(uint=0, length=12)   # Registro general (12 bits)
+        self.M   = BitArray(uint=0, length=12)   # Registro de memoria (12 bits)
+        self.RAM = Memoria()                     # RAM: instancia de Memoria (array de BitArray)
 
-    # ------------------------
-    # ACC
-    def get_ACC(self):
-        return self._ACC
-
-    def set_ACC(self, valor):
-        self._ACC = BitArray(uint=valor & 0xFFF, length=12)  # 12 bits
-
-    # ------------------------
-    # F (flag de sobrecarga)
-    # ------------------------
-    def get_F(self):
-        return self._F
-
-    def set_F(self, valor):
-        self._F = BitArray(uint=valor & 0x1, length=1)       # 1 bit
-
-    # ------------------------
-    # GPR
-    # ------------------------
-    def get_GPR(self):
-        return self._GPR
-
-    def set_GPR(self, valor):
-        self._GPR = BitArray(uint=valor & 0xFFF, length=12)
-
-    # ------------------------
-    # M (registro de memoria)
-    # ------------------------
-    def get_M(self):
-        return self._M
-
-    def set_M(self, valor):
-        self._M = BitArray(uint=valor & 0xFFF, length=12)
-
-    # ------------------------
-    # RAM
-    # ------------------------
-    def get_RAM(self):
-        return self._RAM
-
-    def set_RAM(self, valor):
-        self._RAM = BitArray(uint=valor & 0xFFF, length=12)
-    
+    # Nota: quitadas las funciones get_/set_. Usar los atributos públicos: ACC, F, GPR, M, RAM
 
     def ROL_F_ACC(self):
-        concatenacion = self._F + self._ACC
+        concatenacion = self.F + self.ACC
         concatenacion.rol(1)
+        # concatenacion[0] es un bool -> convertir a BitArray de 1 bit
         self.F = BitArray([concatenacion[0]])
-        self._ACC = concatenacion[1:]
+        self.ACC = concatenacion[1:]
     
     def ROR_F_ACC(self):
-        concatenacion = self.F + self._ACC
+        concatenacion = self.F + self.ACC
         concatenacion.ror(1)
         self.F = BitArray([concatenacion[0]])
-        self._ACC = concatenacion[1:]
+        self.ACC = concatenacion[1:]
     
     def NOT_ACC(self):
-        self._ACC = ~self._ACC
+        self.ACC = ~self.ACC
     
     def ACC_incrementar_a_ACC(self):
-        suma = (self._ACC.uint + 1) & 0xFFF
-        self._ACC = BitArray(uint=suma, length=12)
+        suma = (self.ACC.uint + 1) & 0xFFF
+        self.ACC = BitArray(uint=suma, length=12)
     
     def ACC_a_GPR(self):
-        self._GPR = self._ACC.copy()
+        self.GPR = self.ACC.copy()
 
     def GPR_a_ACC(self):
-        self._ACC = self._GPR.copy()
+        self.ACC = self.GPR.copy()
     
     def ACC_suma_GPR(self):
-        suma = self._ACC.uint + self._GPR.uint
+        suma = self.ACC.uint + self.GPR.uint
         if suma > 0xFFF:
             self.F = BitArray(uint=1, length=1)  # overflow
         else:
             self.F = BitArray(uint=0, length=1)
         
-        self._ACC = BitArray(uint=suma & 0xFFF, length=12)
+        self.ACC = BitArray(uint=suma & 0xFFF, length=12)
     
 
 
 # PRUEBAS
-
+"""
 cpu = VonNeuman()
 
 def inicializar_cpu(acc=12, f=1, gpr=3, m=0):
-    cpu.set_ACC(acc)
-    cpu.set_F(f)
-    cpu.set_GPR(gpr)
-    cpu.set_M(m)
+    cpu.ACC = BitArray(uint=acc & 0xFFF, length=12)
+    cpu.F = BitArray(uint=f & 0x1, length=1)
+    cpu.GPR = BitArray(uint=gpr & 0xFFF, length=12)
+    cpu.M = BitArray(uint=m & 0xFFF, length=12)
 
 
 def mostrar_estado(etiqueta):
     print(etiqueta)
-    print("ACC:", cpu.get_ACC().bin)
-    print("F  :", cpu.get_F().bin)
-    print("GPR:", cpu.get_GPR().bin)
-    print("M  :", cpu.get_M().bin)
+    print("ACC:", cpu.ACC.bin)
+    print("F  :", cpu.F.bin)
+    print("GPR:", cpu.GPR.bin)
+    print("M  :", cpu.M.bin)
     print()
 
 mostrar_estado("Estado inicial:")
 
 # Incrementar ACC
-cpu._ACC_incrementar_a_ACC()
+cpu.ACC_incrementar_a_ACC()
 mostrar_estado("Después de ACC_incrementar_a_ACC():")
 
 # NOT en ACC
@@ -162,11 +121,12 @@ cpu.ROR_F_ACC()
 mostrar_estado("Después de ROR_F_ACC():")
 
 # Copiar ACC a GPR
-cpu._ACC_a_GPR()
+cpu.ACC_a_GPR()
 mostrar_estado("Después de ACC_a_GPR():")
 
 # Cambiar ACC y copiar desde GPR
-cpu._ACC_incrementar_a_ACC()
+cpu.ACC_incrementar_a_ACC()
 cpu.GPR_a_ACC()
 mostrar_estado("Después de GPR_a_ACC():")
 
+"""
