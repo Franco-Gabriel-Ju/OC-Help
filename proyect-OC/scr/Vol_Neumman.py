@@ -35,6 +35,8 @@ class Memoria:
         """
         return [palabra.bin for palabra in self.ram]
 
+
+
 class VonNeuman:
     def __init__(self):
         # Registros públicos (usar directamente cpu.ACC, cpu.F, ...)
@@ -62,17 +64,21 @@ class VonNeuman:
     def NOT_ACC(self):
         self.ACC = ~self.ACC
     
-    def ACC_incrementar_a_ACC(self):
+    def INC_ACC(self):
         suma = (self.ACC.uint + 1) & 0xFFF
         self.ACC = BitArray(uint=suma, length=12)
     
-    def ACC_a_GPR(self):
+    def INC_GPR(self):
+        suma = (self.GPR.uint + 1) & 0xFFF
+        self.GPR = BitArray(uint=suma, length=12)
+    
+    def ACC_TO_GPR(self):
         self.GPR = self.ACC.copy()
 
-    def GPR_a_ACC(self):
+    def GPR_TO_ACC(self):
         self.ACC = self.GPR.copy()
     
-    def ACC_suma_GPR(self):
+    def SUM_ACC_GPR(self):
         suma = self.ACC.uint + self.GPR.uint
         if suma > 0xFFF:
             self.F = BitArray(uint=1, length=1)  # overflow
@@ -80,6 +86,16 @@ class VonNeuman:
             self.F = BitArray(uint=0, length=1)
         
         self.ACC = BitArray(uint=suma & 0xFFF, length=12)
+
+    def ZERO_ACC(self):
+        self.GPR.set(0)
+
+    def ZERO_F(self):
+        self.F.set(0)
+
+    def GPR_AD_TO_MAR(self):
+        self.RAM[self.GPR.uint]
+    
     
 
 
