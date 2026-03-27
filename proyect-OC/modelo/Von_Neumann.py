@@ -1,7 +1,7 @@
 from bitstring import BitArray
 
 class Memoria:
-    def __init__(self, size=1024):
+    def __init__(self, size=256):
         """
         Inicializa la memoria RAM simulada.
         size: número de palabras de 12 bits.
@@ -64,6 +64,9 @@ class VonNeuman:
     def NOT_ACC(self):
         self.ACC = ~self.ACC
     
+    def NOT_F(self):
+        self.F = ~self.F
+
     def INC_ACC(self):
         suma = (self.ACC.uint + 1) & 0xFFF
         self.ACC = BitArray(uint=suma, length=12)
@@ -79,7 +82,7 @@ class VonNeuman:
         self.ACC = self.GPR.copy()
     
     def SUM_ACC_GPR(self):
-        suma = self.ACC.uint + self.GPR.uint
+        suma = self.ACC.copy().uint + self.GPR.copy().uint
         if suma > 0xFFF:
             self.F = BitArray(uint=1, length=1)  # overflow
         else:
@@ -87,17 +90,23 @@ class VonNeuman:
         
         self.ACC = BitArray(uint=suma & 0xFFF, length=12)
 
-    def ZERO_ACC(self):
+    def ZERO_TO_ACC(self):
         self.GPR.set(0)
 
-    def ZERO_F(self):
+    def ZERO_TO_F(self):
         self.F.set(0)
 
     def GPR_AD_TO_MAR(self):
-        self.RAM[self.GPR.uint]
+        self.M = self.RAM[self.GPR.uint]
+
+    def GPR_TO_M(self):
+        self.M = self.GPR.copy()
     
+    def M_TO_GPR(self):
+        self.GPR = self.M.copy()
     
 
+    
 
 # PRUEBAS
 """

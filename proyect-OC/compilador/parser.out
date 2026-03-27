@@ -1,0 +1,538 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> acciones
+Rule 1     acciones -> acciones accion
+Rule 2     acciones -> accion
+Rule 3     accion -> ROL F COMMA ACC
+Rule 4     accion -> ROR F COMMA ACC
+Rule 5     accion -> NOT ACC
+Rule 6     accion -> NOT F
+Rule 7     accion -> ACC PLUS ONE ARROW ACC
+Rule 8     accion -> GPR PLUS ONE ARROW GPR
+Rule 9     accion -> ACC ARROW GPR
+Rule 10    accion -> GPR ARROW ACC
+Rule 11    accion -> ACC PLUS GPR ARROW ACC
+Rule 12    accion -> ZERO ARROW ACC
+Rule 13    accion -> ZERO ARROW F
+Rule 14    accion -> GPR LPAREN AD RPAREN ARROW MAR
+Rule 15    accion -> GPR ARROW M
+Rule 16    accion -> M ARROW GPR
+
+Terminals, with rules where they appear
+
+ACC                  : 3 4 5 7 7 9 10 11 11 12
+AD                   : 14
+ARROW                : 7 8 9 10 11 12 13 14 15 16
+COMMA                : 3 4
+F                    : 3 4 6 13
+GPR                  : 8 8 9 10 11 14 15 16
+LPAREN               : 14
+M                    : 15 16
+MAR                  : 14
+NOT                  : 5 6
+ONE                  : 7 8
+PLUS                 : 7 8 11
+ROL                  : 3
+ROR                  : 4
+RPAREN               : 14
+ZERO                 : 12 13
+error                : 
+
+Nonterminals, with rules where they appear
+
+accion               : 1 2
+acciones             : 1 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . acciones
+    (1) acciones -> . acciones accion
+    (2) acciones -> . accion
+    (3) accion -> . ROL F COMMA ACC
+    (4) accion -> . ROR F COMMA ACC
+    (5) accion -> . NOT ACC
+    (6) accion -> . NOT F
+    (7) accion -> . ACC PLUS ONE ARROW ACC
+    (8) accion -> . GPR PLUS ONE ARROW GPR
+    (9) accion -> . ACC ARROW GPR
+    (10) accion -> . GPR ARROW ACC
+    (11) accion -> . ACC PLUS GPR ARROW ACC
+    (12) accion -> . ZERO ARROW ACC
+    (13) accion -> . ZERO ARROW F
+    (14) accion -> . GPR LPAREN AD RPAREN ARROW MAR
+    (15) accion -> . GPR ARROW M
+    (16) accion -> . M ARROW GPR
+
+    ROL             shift and go to state 3
+    ROR             shift and go to state 5
+    NOT             shift and go to state 6
+    ACC             shift and go to state 4
+    GPR             shift and go to state 7
+    ZERO            shift and go to state 8
+    M               shift and go to state 9
+
+    acciones                       shift and go to state 1
+    accion                         shift and go to state 2
+
+state 1
+
+    (0) S' -> acciones .
+    (1) acciones -> acciones . accion
+    (3) accion -> . ROL F COMMA ACC
+    (4) accion -> . ROR F COMMA ACC
+    (5) accion -> . NOT ACC
+    (6) accion -> . NOT F
+    (7) accion -> . ACC PLUS ONE ARROW ACC
+    (8) accion -> . GPR PLUS ONE ARROW GPR
+    (9) accion -> . ACC ARROW GPR
+    (10) accion -> . GPR ARROW ACC
+    (11) accion -> . ACC PLUS GPR ARROW ACC
+    (12) accion -> . ZERO ARROW ACC
+    (13) accion -> . ZERO ARROW F
+    (14) accion -> . GPR LPAREN AD RPAREN ARROW MAR
+    (15) accion -> . GPR ARROW M
+    (16) accion -> . M ARROW GPR
+
+    ROL             shift and go to state 3
+    ROR             shift and go to state 5
+    NOT             shift and go to state 6
+    ACC             shift and go to state 4
+    GPR             shift and go to state 7
+    ZERO            shift and go to state 8
+    M               shift and go to state 9
+
+    accion                         shift and go to state 10
+
+state 2
+
+    (2) acciones -> accion .
+
+    ROL             reduce using rule 2 (acciones -> accion .)
+    ROR             reduce using rule 2 (acciones -> accion .)
+    NOT             reduce using rule 2 (acciones -> accion .)
+    ACC             reduce using rule 2 (acciones -> accion .)
+    GPR             reduce using rule 2 (acciones -> accion .)
+    ZERO            reduce using rule 2 (acciones -> accion .)
+    M               reduce using rule 2 (acciones -> accion .)
+    $end            reduce using rule 2 (acciones -> accion .)
+
+
+state 3
+
+    (3) accion -> ROL . F COMMA ACC
+
+    F               shift and go to state 11
+
+
+state 4
+
+    (7) accion -> ACC . PLUS ONE ARROW ACC
+    (9) accion -> ACC . ARROW GPR
+    (11) accion -> ACC . PLUS GPR ARROW ACC
+
+    PLUS            shift and go to state 12
+    ARROW           shift and go to state 13
+
+
+state 5
+
+    (4) accion -> ROR . F COMMA ACC
+
+    F               shift and go to state 14
+
+
+state 6
+
+    (5) accion -> NOT . ACC
+    (6) accion -> NOT . F
+
+    ACC             shift and go to state 15
+    F               shift and go to state 16
+
+
+state 7
+
+    (8) accion -> GPR . PLUS ONE ARROW GPR
+    (10) accion -> GPR . ARROW ACC
+    (14) accion -> GPR . LPAREN AD RPAREN ARROW MAR
+    (15) accion -> GPR . ARROW M
+
+    PLUS            shift and go to state 17
+    ARROW           shift and go to state 18
+    LPAREN          shift and go to state 19
+
+
+state 8
+
+    (12) accion -> ZERO . ARROW ACC
+    (13) accion -> ZERO . ARROW F
+
+    ARROW           shift and go to state 20
+
+
+state 9
+
+    (16) accion -> M . ARROW GPR
+
+    ARROW           shift and go to state 21
+
+
+state 10
+
+    (1) acciones -> acciones accion .
+
+    ROL             reduce using rule 1 (acciones -> acciones accion .)
+    ROR             reduce using rule 1 (acciones -> acciones accion .)
+    NOT             reduce using rule 1 (acciones -> acciones accion .)
+    ACC             reduce using rule 1 (acciones -> acciones accion .)
+    GPR             reduce using rule 1 (acciones -> acciones accion .)
+    ZERO            reduce using rule 1 (acciones -> acciones accion .)
+    M               reduce using rule 1 (acciones -> acciones accion .)
+    $end            reduce using rule 1 (acciones -> acciones accion .)
+
+
+state 11
+
+    (3) accion -> ROL F . COMMA ACC
+
+    COMMA           shift and go to state 22
+
+
+state 12
+
+    (7) accion -> ACC PLUS . ONE ARROW ACC
+    (11) accion -> ACC PLUS . GPR ARROW ACC
+
+    ONE             shift and go to state 23
+    GPR             shift and go to state 24
+
+
+state 13
+
+    (9) accion -> ACC ARROW . GPR
+
+    GPR             shift and go to state 25
+
+
+state 14
+
+    (4) accion -> ROR F . COMMA ACC
+
+    COMMA           shift and go to state 26
+
+
+state 15
+
+    (5) accion -> NOT ACC .
+
+    ROL             reduce using rule 5 (accion -> NOT ACC .)
+    ROR             reduce using rule 5 (accion -> NOT ACC .)
+    NOT             reduce using rule 5 (accion -> NOT ACC .)
+    ACC             reduce using rule 5 (accion -> NOT ACC .)
+    GPR             reduce using rule 5 (accion -> NOT ACC .)
+    ZERO            reduce using rule 5 (accion -> NOT ACC .)
+    M               reduce using rule 5 (accion -> NOT ACC .)
+    $end            reduce using rule 5 (accion -> NOT ACC .)
+
+
+state 16
+
+    (6) accion -> NOT F .
+
+    ROL             reduce using rule 6 (accion -> NOT F .)
+    ROR             reduce using rule 6 (accion -> NOT F .)
+    NOT             reduce using rule 6 (accion -> NOT F .)
+    ACC             reduce using rule 6 (accion -> NOT F .)
+    GPR             reduce using rule 6 (accion -> NOT F .)
+    ZERO            reduce using rule 6 (accion -> NOT F .)
+    M               reduce using rule 6 (accion -> NOT F .)
+    $end            reduce using rule 6 (accion -> NOT F .)
+
+
+state 17
+
+    (8) accion -> GPR PLUS . ONE ARROW GPR
+
+    ONE             shift and go to state 27
+
+
+state 18
+
+    (10) accion -> GPR ARROW . ACC
+    (15) accion -> GPR ARROW . M
+
+    ACC             shift and go to state 28
+    M               shift and go to state 29
+
+
+state 19
+
+    (14) accion -> GPR LPAREN . AD RPAREN ARROW MAR
+
+    AD              shift and go to state 30
+
+
+state 20
+
+    (12) accion -> ZERO ARROW . ACC
+    (13) accion -> ZERO ARROW . F
+
+    ACC             shift and go to state 31
+    F               shift and go to state 32
+
+
+state 21
+
+    (16) accion -> M ARROW . GPR
+
+    GPR             shift and go to state 33
+
+
+state 22
+
+    (3) accion -> ROL F COMMA . ACC
+
+    ACC             shift and go to state 34
+
+
+state 23
+
+    (7) accion -> ACC PLUS ONE . ARROW ACC
+
+    ARROW           shift and go to state 35
+
+
+state 24
+
+    (11) accion -> ACC PLUS GPR . ARROW ACC
+
+    ARROW           shift and go to state 36
+
+
+state 25
+
+    (9) accion -> ACC ARROW GPR .
+
+    ROL             reduce using rule 9 (accion -> ACC ARROW GPR .)
+    ROR             reduce using rule 9 (accion -> ACC ARROW GPR .)
+    NOT             reduce using rule 9 (accion -> ACC ARROW GPR .)
+    ACC             reduce using rule 9 (accion -> ACC ARROW GPR .)
+    GPR             reduce using rule 9 (accion -> ACC ARROW GPR .)
+    ZERO            reduce using rule 9 (accion -> ACC ARROW GPR .)
+    M               reduce using rule 9 (accion -> ACC ARROW GPR .)
+    $end            reduce using rule 9 (accion -> ACC ARROW GPR .)
+
+
+state 26
+
+    (4) accion -> ROR F COMMA . ACC
+
+    ACC             shift and go to state 37
+
+
+state 27
+
+    (8) accion -> GPR PLUS ONE . ARROW GPR
+
+    ARROW           shift and go to state 38
+
+
+state 28
+
+    (10) accion -> GPR ARROW ACC .
+
+    ROL             reduce using rule 10 (accion -> GPR ARROW ACC .)
+    ROR             reduce using rule 10 (accion -> GPR ARROW ACC .)
+    NOT             reduce using rule 10 (accion -> GPR ARROW ACC .)
+    ACC             reduce using rule 10 (accion -> GPR ARROW ACC .)
+    GPR             reduce using rule 10 (accion -> GPR ARROW ACC .)
+    ZERO            reduce using rule 10 (accion -> GPR ARROW ACC .)
+    M               reduce using rule 10 (accion -> GPR ARROW ACC .)
+    $end            reduce using rule 10 (accion -> GPR ARROW ACC .)
+
+
+state 29
+
+    (15) accion -> GPR ARROW M .
+
+    ROL             reduce using rule 15 (accion -> GPR ARROW M .)
+    ROR             reduce using rule 15 (accion -> GPR ARROW M .)
+    NOT             reduce using rule 15 (accion -> GPR ARROW M .)
+    ACC             reduce using rule 15 (accion -> GPR ARROW M .)
+    GPR             reduce using rule 15 (accion -> GPR ARROW M .)
+    ZERO            reduce using rule 15 (accion -> GPR ARROW M .)
+    M               reduce using rule 15 (accion -> GPR ARROW M .)
+    $end            reduce using rule 15 (accion -> GPR ARROW M .)
+
+
+state 30
+
+    (14) accion -> GPR LPAREN AD . RPAREN ARROW MAR
+
+    RPAREN          shift and go to state 39
+
+
+state 31
+
+    (12) accion -> ZERO ARROW ACC .
+
+    ROL             reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    ROR             reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    NOT             reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    ACC             reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    GPR             reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    ZERO            reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    M               reduce using rule 12 (accion -> ZERO ARROW ACC .)
+    $end            reduce using rule 12 (accion -> ZERO ARROW ACC .)
+
+
+state 32
+
+    (13) accion -> ZERO ARROW F .
+
+    ROL             reduce using rule 13 (accion -> ZERO ARROW F .)
+    ROR             reduce using rule 13 (accion -> ZERO ARROW F .)
+    NOT             reduce using rule 13 (accion -> ZERO ARROW F .)
+    ACC             reduce using rule 13 (accion -> ZERO ARROW F .)
+    GPR             reduce using rule 13 (accion -> ZERO ARROW F .)
+    ZERO            reduce using rule 13 (accion -> ZERO ARROW F .)
+    M               reduce using rule 13 (accion -> ZERO ARROW F .)
+    $end            reduce using rule 13 (accion -> ZERO ARROW F .)
+
+
+state 33
+
+    (16) accion -> M ARROW GPR .
+
+    ROL             reduce using rule 16 (accion -> M ARROW GPR .)
+    ROR             reduce using rule 16 (accion -> M ARROW GPR .)
+    NOT             reduce using rule 16 (accion -> M ARROW GPR .)
+    ACC             reduce using rule 16 (accion -> M ARROW GPR .)
+    GPR             reduce using rule 16 (accion -> M ARROW GPR .)
+    ZERO            reduce using rule 16 (accion -> M ARROW GPR .)
+    M               reduce using rule 16 (accion -> M ARROW GPR .)
+    $end            reduce using rule 16 (accion -> M ARROW GPR .)
+
+
+state 34
+
+    (3) accion -> ROL F COMMA ACC .
+
+    ROL             reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    ROR             reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    NOT             reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    ACC             reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    GPR             reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    ZERO            reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    M               reduce using rule 3 (accion -> ROL F COMMA ACC .)
+    $end            reduce using rule 3 (accion -> ROL F COMMA ACC .)
+
+
+state 35
+
+    (7) accion -> ACC PLUS ONE ARROW . ACC
+
+    ACC             shift and go to state 40
+
+
+state 36
+
+    (11) accion -> ACC PLUS GPR ARROW . ACC
+
+    ACC             shift and go to state 41
+
+
+state 37
+
+    (4) accion -> ROR F COMMA ACC .
+
+    ROL             reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    ROR             reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    NOT             reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    ACC             reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    GPR             reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    ZERO            reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    M               reduce using rule 4 (accion -> ROR F COMMA ACC .)
+    $end            reduce using rule 4 (accion -> ROR F COMMA ACC .)
+
+
+state 38
+
+    (8) accion -> GPR PLUS ONE ARROW . GPR
+
+    GPR             shift and go to state 42
+
+
+state 39
+
+    (14) accion -> GPR LPAREN AD RPAREN . ARROW MAR
+
+    ARROW           shift and go to state 43
+
+
+state 40
+
+    (7) accion -> ACC PLUS ONE ARROW ACC .
+
+    ROL             reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    ROR             reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    NOT             reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    ACC             reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    GPR             reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    ZERO            reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    M               reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+    $end            reduce using rule 7 (accion -> ACC PLUS ONE ARROW ACC .)
+
+
+state 41
+
+    (11) accion -> ACC PLUS GPR ARROW ACC .
+
+    ROL             reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    ROR             reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    NOT             reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    ACC             reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    GPR             reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    ZERO            reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    M               reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+    $end            reduce using rule 11 (accion -> ACC PLUS GPR ARROW ACC .)
+
+
+state 42
+
+    (8) accion -> GPR PLUS ONE ARROW GPR .
+
+    ROL             reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    ROR             reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    NOT             reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    ACC             reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    GPR             reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    ZERO            reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    M               reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+    $end            reduce using rule 8 (accion -> GPR PLUS ONE ARROW GPR .)
+
+
+state 43
+
+    (14) accion -> GPR LPAREN AD RPAREN ARROW . MAR
+
+    MAR             shift and go to state 44
+
+
+state 44
+
+    (14) accion -> GPR LPAREN AD RPAREN ARROW MAR .
+
+    ROL             reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    ROR             reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    NOT             reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    ACC             reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    GPR             reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    ZERO            reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    M               reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+    $end            reduce using rule 14 (accion -> GPR LPAREN AD RPAREN ARROW MAR .)
+

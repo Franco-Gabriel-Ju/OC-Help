@@ -1,7 +1,5 @@
 import ply.yacc as yacc
-from AnalizadorLexico import tokens  # o donde tengas tus tokens
-
-
+from compilador.AnalizadorLexico import tokens  # o donde tengas tus tokens
 
 def p_acciones(p): 
     '''
@@ -27,9 +25,13 @@ def p_accion(p):
               | ACC PLUS GPR ARROW ACC
               | ZERO ARROW ACC
               | ZERO ARROW F
-              | GPR AD ARROW MAR
-              | GPR TO M
-              | M TO GPR
+              | GPR LPAREN AD RPAREN ARROW MAR
+              | GPR ARROW M
+              | M ARROW GPR
+              | GPR LPAREN AD RPAREN ARROW OPR
+              | PC PLUS ONE ARROW PC
+              | PC ARROW MAR
+              | GPR LPAREN 
     '''
 
     # ROL / ROR
@@ -72,24 +74,16 @@ def p_accion(p):
             p[0] = ("ZERO_F",)
 
     # GPR (AD) → MAR
-    elif p.slice[1].type == 'GPR' and p.slice[2].type == 'AD':
+    elif p.slice[1].type == 'GPR' and p.slice[3].type == 'AD':
         p[0] = ("GPR_AD_TO_MAR",)
 
     # GPR → M
-    elif p.slice[1].type == 'GPR' and p.slice[2].type == 'TO':
+    elif p.slice[1].type == 'GPR' and p.slice[3].type == 'M':
         p[0] = ("GPR_TO_M",)
 
     # M → GPR
     elif p.slice[1].type == 'M':
         p[0] = ("M_TO_GPR",)
-
-
-data = '''
-1+acc := acc
-Acc := gpr
-
-'''
-
 
 
 def p_error(p):
@@ -99,8 +93,3 @@ def p_error(p):
         print("Error de sintaxis al final del input") 
 
 parser = yacc.yacc()
-
-programa = parser.parse(data) 
-
-
-print(programa)

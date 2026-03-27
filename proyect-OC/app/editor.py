@@ -1,17 +1,21 @@
 import tkinter as tk
 from tkinter import ttk
+from bitstring import BitArray
+from modelo.Von_Neumann import VonNeuman
+from compilador.AnalizadorSintactico import parser  # IMPORTANTE (arriba del archivo)
+
 
 class CPU_UI:
 
     def __init__(self, root):
         self.root = root
         self.configurar_ventana()
+        self.cpu = VonNeuman()
+        self.pc = 0  # program counter
 
-        # Variables globales
         self.mem_vars_edit = []
         self.mem_vars_view = []
 
-        # Layout principal
         self.main = ttk.Frame(root, padding=8)
         self.main.pack(fill="both", expand=True)
 
@@ -20,7 +24,6 @@ class CPU_UI:
         self.main.rowconfigure(0, weight=1)
         self.main.rowconfigure(1, weight=1)
 
-        # Crear secciones
         self.crear_barra_izquierda()
         self.crear_editor_codigo()
         self.crear_barra_inferior()
@@ -50,7 +53,6 @@ class CPU_UI:
             "ACC": tk.StringVar(value="000000000000"),
             "GPR": tk.StringVar(value="000000000000"),
             "F": tk.StringVar(value="0"),
-            "MAR": tk.StringVar(value="000000000000"),
             "M": tk.StringVar(value="000000000000"),
         }
 
@@ -74,26 +76,19 @@ class CPU_UI:
         editor_frame.columnconfigure(1, weight=1)
         editor_frame.rowconfigure(0, weight=1)
 
-        # Widget de números de línea
         self.line_numbers = tk.Text(editor_frame, width=4, padx=4, takefocus=0,
-                                border=0, background="lightgray", state="disabled")
+                                   border=0, background="lightgray", state="disabled")
         self.line_numbers.grid(row=0, column=0, sticky="ns")
 
-        # Editor principal
         self.code = tk.Text(editor_frame, font=("Courier", 10))
         self.code.grid(row=0, column=1, sticky="nsew")
 
-        # Scrollbar
         scrollbar = ttk.Scrollbar(editor_frame, orient="vertical", command=self._on_scroll)
         scrollbar.grid(row=0, column=2, sticky="ns")
 
         self.code.config(yscrollcommand=scrollbar.set)
 
-        # Eventos para actualizar líneas
         self.code.bind("<KeyRelease>", self.actualizar_lineas)
-        self.code.bind("<MouseWheel>", self.actualizar_lineas)
-        self.code.bind("<Button-1>", self.actualizar_lineas)
-
         self.actualizar_lineas()
 
     def actualizar_lineas(self, event=None):
@@ -110,6 +105,7 @@ class CPU_UI:
     def _on_scroll(self, *args):
         self.code.yview(*args)
         self.line_numbers.yview(*args)
+
     # ---------------------------
     # 📊 Barra Inferior
     # ---------------------------
@@ -124,13 +120,16 @@ class CPU_UI:
         self.crear_resultados(bottom)
         self.crear_memoria_visual(bottom)
 
+        ejecutar_btn = ttk.Button(bottom, text="Ejecutar 1 instrucción", command=self.ejecutar_una)
+        ejecutar_btn.grid(row=1, column=0, columnspan=2, pady=5)
+
     def crear_resultados(self, parent):
         results = ttk.LabelFrame(parent, text="Resultados", padding=10)
         results.grid(row=0, column=0, sticky="nsew", padx=(0,5))
 
         self.result_labels = {}
 
-        for name in ["ACC","GPR","MAR","M"]:
+        for name in ["ACC","GPR","M"]:
             lbl = ttk.Label(results, text=f"{name}: 000000000000")
             lbl.pack(anchor="w", pady=2)
             self.result_labels[name] = lbl
@@ -145,10 +144,10 @@ class CPU_UI:
         self.mem_vars_view = self.create_memory(frame, editable=False)
 
     # ---------------------------
-    # 🧩 Memoria (Reusable)
+    # 🧩 Memoria
     # ---------------------------
     def create_memory(self, parent, editable=False):
-        canvas = tk.Canvas(parent, width=180, highlightthickness=0)
+        canvas = tk.Canvas(parent, width=180)
         scrollbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
         inner = ttk.Frame(canvas)
 
@@ -162,21 +161,132 @@ class CPU_UI:
         vars_list = []
 
         for i in range(256):
-            addr = f"{i:04X}"
             var = tk.StringVar(value="000000000000")
             vars_list.append(var)
 
             row = ttk.Frame(inner)
-            row.pack(anchor="w", fill="x")
+            row.pack(anchor="w")
 
-            ttk.Label(row, text=addr, width=6).pack(side="left")
+            ttk.Label(row, text=f"{i:04X}", width=6).pack(side="left")
 
             if editable:
-                ttk.Entry(row, textvariable=var, width=15).pack(side="left", padx=2)
+                ttk.Entry(row, textvariable=var, width=15).pack(side="left")
             else:
-                ttk.Label(row, textvariable=var, width=15, background="white").pack(side="left", padx=2)
+                ttk.Label(row, textvariable=var, width=15).pack(side="left")
 
         return vars_list
+
+    # ---------------------------
+    # 🔌 CONEXIÓN UI ↔ CPU
+    # ---------------------------
+    def cargar_memoria_desde_ui(self):
+        for i, var in enumerate(self.mem_vars_edit):
+            try:
+                valor = int(var.get(), 2)
+                self.cpu.RAM.escribir(i, valor)
+            except:
+                self.cpu.RAM.escribir(i, 0)
+
+    def actualizar_memoria_ui(self):
+        dump = self.cpu.RAM.dump()
+        for i in range(len(dump)):
+            self.mem_vars_view[i].set(dump[i])
+
+    def cargar_registros_desde_ui(self):
+        self.cpu.ACC = BitArray(bin=self.registers["ACC"].get())
+        self.cpu.GPR = BitArray(bin=self.registers["GPR"].get())
+        self.cpu.F   = BitArray(bin=self.registers["F"].get())
+        self.cpu.M   = BitArray(bin=self.registers["M"].get())
+
+    def actualizar_registros_ui(self):
+        self.result_labels["ACC"].config(text=f"ACC: {self.cpu.ACC.bin}")
+        self.result_labels["GPR"].config(text=f"GPR: {self.cpu.GPR.bin}")
+        self.result_labels["M"].config(text=f"M: {self.cpu.M.bin}")
+        self.flag.config(text=f"F: {self.cpu.F.bin}")
+
+    # ---------------------------
+    # ▶️ EJECUCIÓN
+    # ---------------------------
+
+    def ejecutar_una(self):
+        if self.pc == 0:
+            self.cargar_registros_desde_ui()
+            self.cargar_memoria_desde_ui()
+
+        lineas = self.code.get("1.0", "end").strip().split("\n")
+
+        if self.pc >= len(lineas):
+            print(self.cpu.ACC.bin)
+            print("Fin del programa")
+            return
+
+        linea = lineas[self.pc].strip()
+
+        # 👉 parsear la línea
+        instr = parser.parse(linea)
+
+        print("LINEA:", linea)
+        print("PARSE:", instr)
+
+        if not instr:
+            print("❌ Error de parsing")
+            self.pc += 1
+            return
+
+        op = instr[0][0]
+        print("Ejecutando:", op)
+
+        # 🔥 SIN DISPATCH
+        if op == "INC_ACC":
+            self.cpu.INC_ACC()
+
+        elif op == "INC_GPR":
+            self.cpu.INC_GPR()
+
+        elif op == "NOT_ACC":
+            self.cpu.NOT_ACC()
+
+        elif op == "NOT_F":
+            self.cpu.NOT_F()
+
+        elif op == "ROL_F_ACC":
+            self.cpu.ROL_F_ACC()
+
+        elif op == "ROR_F_ACC":
+            self.cpu.ROR_F_ACC()
+
+        elif op == "SUM_ACC_GPR":
+            self.cpu.SUM_ACC_GPR()
+
+        elif op == "ACC_TO_GPR":
+            self.cpu.ACC_TO_GPR()
+
+        elif op == "GPR_TO_ACC":
+            self.cpu.GPR_TO_ACC()
+
+        elif op == "ZERO_ACC":
+            self.cpu.ZERO_TO_ACC()
+
+        elif op == "ZERO_F":
+            self.cpu.ZERO_TO_F()
+
+        elif op == "GPR_AD_TO_MAR":
+            self.cpu.GPR_AD_TO_MAR()
+
+        elif op == "GPR_TO_M":
+            self.cpu.GPR_TO_M()
+
+        elif op == "M_TO_GPR":
+            self.cpu.M_TO_GPR()
+
+        else:
+            print("❌ Instrucción no soportada:", op)
+
+        self.pc += 1
+
+        self.actualizar_registros_ui()
+        self.actualizar_memoria_ui()
+  
 
 
 # ---------------------------

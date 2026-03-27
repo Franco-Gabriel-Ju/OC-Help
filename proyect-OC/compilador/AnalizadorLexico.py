@@ -4,8 +4,11 @@ import re
 # Lista de tokens
 tokens = (
     'ACC',
+    'AD',
+    'PC',
+    'OP',
+    'OPR',
     'GPR',
-    'RAM',
     'MAR',
     'M',
     'ROL',
@@ -24,12 +27,15 @@ tokens = (
 # Palabras clave
 t_ACC = r'ACC'
 t_GPR = r'GPR'
-t_RAM = r'RAM'
 t_MAR = r'MAR'
 t_M = r'M'
 t_ROL = r'ROL'
 t_ROR = r'ROR'
 t_F = r'F'
+t_AD = r'AD'
+t_OP = r'OP'
+t_PC = r'PC'
+t_OPR = r'OPR'
 
 # Símbolos
 t_NOT = r'!'
