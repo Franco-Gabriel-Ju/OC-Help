@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ACC AD ARROW COMMA F GPR LPAREN M MAR NOT ONE PLUS ROL ROR RPAREN ZERO\n    acciones : acciones accion\n             | accion\n    accion : ROL F COMMA ACC\n              | ROR F COMMA ACC\n              | NOT ACC\n              | NOT F\n              | ACC PLUS ONE ARROW ACC\n              | GPR PLUS ONE ARROW GPR\n              | ACC ARROW GPR\n              | GPR ARROW ACC\n              | ACC PLUS GPR ARROW ACC\n              | ZERO ARROW ACC\n              | ZERO ARROW F\n              | GPR LPAREN AD RPAREN ARROW MAR\n              | GPR ARROW M\n              | M ARROW GPR\n    '
+_lr_signature = 'ACC AD ARROW COMMA F GPR LPAREN M MAR NOT ONE OP OPR PC PLUS ROL ROR RPAREN ZEROacciones : acciones accion\n| accion\naccion : ROL F COMMA ACC\n| ROR F COMMA ACC\n| NOT ACC\n| NOT F\n| ACC NOT ARROW ACC\n| ZERO ARROW ACC\n| ZERO ARROW F\n| ACC PLUS ONE ARROW ACC\n| GPR PLUS ONE ARROW GPR\n| ACC PLUS GPR ARROW ACC\n| GPR PLUS ACC ARROW ACC\n| ACC ARROW GPR\n| GPR ARROW ACC\n| GPR ARROW M\n| M ARROW GPR\n| GPR LPAREN AD RPAREN ARROW MAR\n| GPR LPAREN AD RPAREN ARROW OPR\n| PC PLUS ONE ARROW PC\n| PC ARROW MAR\n'
     
-_lr_action_items = {'ROL':([0,1,2,10,15,16,25,28,29,31,32,33,34,37,40,41,42,44,],[3,3,-2,-1,-5,-6,-9,-10,-15,-12,-13,-16,-3,-4,-7,-11,-8,-14,]),'ROR':([0,1,2,10,15,16,25,28,29,31,32,33,34,37,40,41,42,44,],[5,5,-2,-1,-5,-6,-9,-10,-15,-12,-13,-16,-3,-4,-7,-11,-8,-14,]),'NOT':([0,1,2,10,15,16,25,28,29,31,32,33,34,37,40,41,42,44,],[6,6,-2,-1,-5,-6,-9,-10,-15,-12,-13,-16,-3,-4,-7,-11,-8,-14,]),'ACC':([0,1,2,6,10,15,16,18,20,22,25,26,28,29,31,32,33,34,35,36,37,40,41,42,44,],[4,4,-2,15,-1,-5,-6,28,31,34,-9,37,-10,-15,-12,-13,-16,-3,40,41,-4,-7,-11,-8,-14,]),'GPR':([0,1,2,10,12,13,15,16,21,25,28,29,31,32,33,34,37,38,40,41,42,44,],[7,7,-2,-1,24,25,-5,-6,33,-9,-10,-15,-12,-13,-16,-3,-4,42,-7,-11,-8,-14,]),'ZERO':([0,1,2,10,15,16,25,28,29,31,32,33,34,37,40,41,42,44,],[8,8,-2,-1,-5,-6,-9,-10,-15,-12,-13,-16,-3,-4,-7,-11,-8,-14,]),'M':([0,1,2,10,15,16,18,25,28,29,31,32,33,34,37,40,41,42,44,],[9,9,-2,-1,-5,-6,29,-9,-10,-15,-12,-13,-16,-3,-4,-7,-11,-8,-14,]),'$end':([1,2,10,15,16,25,28,29,31,32,33,34,37,40,41,42,44,],[0,-2,-1,-5,-6,-9,-10,-15,-12,-13,-16,-3,-4,-7,-11,-8,-14,]),'F':([3,5,6,20,],[11,14,16,32,]),'PLUS':([4,7,],[12,17,]),'ARROW':([4,7,8,9,23,24,27,39,],[13,18,20,21,35,36,38,43,]),'LPAREN':([7,],[19,]),'COMMA':([11,14,],[22,26,]),'ONE':([12,17,],[23,27,]),'AD':([19,],[30,]),'RPAREN':([30,],[39,]),'MAR':([43,],[44,]),}
+_lr_action_items = {'ROL':([0,1,2,11,17,18,28,32,33,36,37,39,41,42,43,46,51,52,53,54,56,57,58,],[3,3,-2,-1,-5,-6,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,-10,-12,-11,-13,-20,-18,-19,]),'ROR':([0,1,2,11,17,18,28,32,33,36,37,39,41,42,43,46,51,52,53,54,56,57,58,],[5,5,-2,-1,-5,-6,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,-10,-12,-11,-13,-20,-18,-19,]),'NOT':([0,1,2,4,11,17,18,28,32,33,36,37,39,41,42,43,46,51,52,53,54,56,57,58,],[6,6,-2,13,-1,-5,-6,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,-10,-12,-11,-13,-20,-18,-19,]),'ACC':([0,1,2,6,11,17,18,19,20,21,26,27,28,31,32,33,36,37,39,41,42,43,44,45,46,48,51,52,53,54,56,57,58,],[4,4,-2,17,-1,-5,-6,32,35,36,42,43,-14,46,-8,-9,-15,-16,-17,-21,-3,-7,51,52,-4,54,-10,-12,-11,-13,-20,-18,-19,]),'ZERO':([0,1,2,11,17,18,28,32,33,36,37,39,41,42,43,46,51,52,53,54,56,57,58,],[7,7,-2,-1,-5,-6,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,-10,-12,-11,-13,-20,-18,-19,]),'GPR':([0,1,2,11,14,15,17,18,23,28,32,33,36,37,39,41,42,43,46,47,51,52,53,54,56,57,58,],[8,8,-2,-1,28,30,-5,-6,39,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,53,-10,-12,-11,-13,-20,-18,-19,]),'M':([0,1,2,11,17,18,21,28,32,33,36,37,39,41,42,43,46,51,52,53,54,56,57,58,],[9,9,-2,-1,-5,-6,37,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,-10,-12,-11,-13,-20,-18,-19,]),'PC':([0,1,2,11,17,18,28,32,33,36,37,39,41,42,43,46,50,51,52,53,54,56,57,58,],[10,10,-2,-1,-5,-6,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,56,-10,-12,-11,-13,-20,-18,-19,]),'$end':([1,2,11,17,18,28,32,33,36,37,39,41,42,43,46,51,52,53,54,56,57,58,],[0,-2,-1,-5,-6,-14,-8,-9,-15,-16,-17,-21,-3,-7,-4,-10,-12,-11,-13,-20,-18,-19,]),'F':([3,5,6,19,],[12,16,18,33,]),'PLUS':([4,8,10,],[15,20,24,]),'ARROW':([4,7,8,9,10,13,29,30,34,35,40,49,],[14,19,21,23,25,27,44,45,47,48,50,55,]),'LPAREN':([8,],[22,]),'COMMA':([12,16,],[26,31,]),'ONE':([15,20,24,],[29,34,40,]),'AD':([22,],[38,]),'MAR':([25,55,],[41,57,]),'RPAREN':([38,],[49,]),'OPR':([55,],[58,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'acciones':([0,],[1,]),'accion':([0,1,],[2,10,]),}
+_lr_goto_items = {'acciones':([0,],[1,]),'accion':([0,1,],[2,11,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,20 +27,25 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> acciones","S'",1,None,None,None),
-  ('acciones -> acciones accion','acciones',2,'p_acciones','AnalizadorSintactico.py',6),
-  ('acciones -> accion','acciones',1,'p_acciones','AnalizadorSintactico.py',7),
-  ('accion -> ROL F COMMA ACC','accion',4,'p_accion','AnalizadorSintactico.py',17),
-  ('accion -> ROR F COMMA ACC','accion',4,'p_accion','AnalizadorSintactico.py',18),
-  ('accion -> NOT ACC','accion',2,'p_accion','AnalizadorSintactico.py',19),
-  ('accion -> NOT F','accion',2,'p_accion','AnalizadorSintactico.py',20),
-  ('accion -> ACC PLUS ONE ARROW ACC','accion',5,'p_accion','AnalizadorSintactico.py',21),
-  ('accion -> GPR PLUS ONE ARROW GPR','accion',5,'p_accion','AnalizadorSintactico.py',22),
-  ('accion -> ACC ARROW GPR','accion',3,'p_accion','AnalizadorSintactico.py',23),
-  ('accion -> GPR ARROW ACC','accion',3,'p_accion','AnalizadorSintactico.py',24),
-  ('accion -> ACC PLUS GPR ARROW ACC','accion',5,'p_accion','AnalizadorSintactico.py',25),
-  ('accion -> ZERO ARROW ACC','accion',3,'p_accion','AnalizadorSintactico.py',26),
-  ('accion -> ZERO ARROW F','accion',3,'p_accion','AnalizadorSintactico.py',27),
-  ('accion -> GPR LPAREN AD RPAREN ARROW MAR','accion',6,'p_accion','AnalizadorSintactico.py',28),
-  ('accion -> GPR ARROW M','accion',3,'p_accion','AnalizadorSintactico.py',29),
-  ('accion -> M ARROW GPR','accion',3,'p_accion','AnalizadorSintactico.py',30),
+  ('acciones -> acciones accion','acciones',2,'p_acciones','AnalizadorSintactico.py',5),
+  ('acciones -> accion','acciones',1,'p_acciones','AnalizadorSintactico.py',6),
+  ('accion -> ROL F COMMA ACC','accion',4,'p_accion','AnalizadorSintactico.py',15),
+  ('accion -> ROR F COMMA ACC','accion',4,'p_accion','AnalizadorSintactico.py',16),
+  ('accion -> NOT ACC','accion',2,'p_accion','AnalizadorSintactico.py',17),
+  ('accion -> NOT F','accion',2,'p_accion','AnalizadorSintactico.py',18),
+  ('accion -> ACC NOT ARROW ACC','accion',4,'p_accion','AnalizadorSintactico.py',19),
+  ('accion -> ZERO ARROW ACC','accion',3,'p_accion','AnalizadorSintactico.py',20),
+  ('accion -> ZERO ARROW F','accion',3,'p_accion','AnalizadorSintactico.py',21),
+  ('accion -> ACC PLUS ONE ARROW ACC','accion',5,'p_accion','AnalizadorSintactico.py',22),
+  ('accion -> GPR PLUS ONE ARROW GPR','accion',5,'p_accion','AnalizadorSintactico.py',23),
+  ('accion -> ACC PLUS GPR ARROW ACC','accion',5,'p_accion','AnalizadorSintactico.py',24),
+  ('accion -> GPR PLUS ACC ARROW ACC','accion',5,'p_accion','AnalizadorSintactico.py',25),
+  ('accion -> ACC ARROW GPR','accion',3,'p_accion','AnalizadorSintactico.py',26),
+  ('accion -> GPR ARROW ACC','accion',3,'p_accion','AnalizadorSintactico.py',27),
+  ('accion -> GPR ARROW M','accion',3,'p_accion','AnalizadorSintactico.py',28),
+  ('accion -> M ARROW GPR','accion',3,'p_accion','AnalizadorSintactico.py',29),
+  ('accion -> GPR LPAREN AD RPAREN ARROW MAR','accion',6,'p_accion','AnalizadorSintactico.py',30),
+  ('accion -> GPR LPAREN AD RPAREN ARROW OPR','accion',6,'p_accion','AnalizadorSintactico.py',31),
+  ('accion -> PC PLUS ONE ARROW PC','accion',5,'p_accion','AnalizadorSintactico.py',32),
+  ('accion -> PC ARROW MAR','accion',3,'p_accion','AnalizadorSintactico.py',33),
 ]

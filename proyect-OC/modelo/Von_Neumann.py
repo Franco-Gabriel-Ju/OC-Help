@@ -44,6 +44,8 @@ class VonNeuman:
         self.F   = BitArray(uint=0, length=1)    # Flag de overflow (1 bit)
         self.GPR = BitArray(uint=0, length=12)   # Registro general (12 bits)
         self.M   = BitArray(uint=0, length=12)   # Registro de memoria (12 bits)
+        self.MAR = BitArray(uint=0, length=12)   # Memory Address Register
+        self.PC  = BitArray(uint=0, length=12)   # Program Counter
         self.RAM = Memoria()                     # RAM: instancia de Memoria (array de BitArray)
 
     # Nota: quitadas las funciones get_/set_. Usar los atributos públicos: ACC, F, GPR, M, RAM
@@ -91,19 +93,31 @@ class VonNeuman:
         self.ACC = BitArray(uint=suma & 0xFFF, length=12)
 
     def ZERO_TO_ACC(self):
-        self.GPR.set(0)
+        self.ACC = BitArray(uint=0, length=12)
 
     def ZERO_TO_F(self):
-        self.F.set(0)
+        self.F = BitArray(uint=0, length=1)
 
     def GPR_AD_TO_MAR(self):
-        self.M = self.RAM[self.GPR.uint]
+        self.M = self.RAM.leer(self.GPR.uint)
 
     def GPR_TO_M(self):
         self.M = self.GPR.copy()
     
     def M_TO_GPR(self):
         self.GPR = self.M.copy()
+
+    def PC_TO_MAR(self):
+        self.MAR = self.PC.copy()
+        self.M = self.RAM.leer(self.PC.uint)
+        self.GPR = self.M.copy()
+
+    def INC_PC(self):
+        val = (self.PC.uint + 1) & 0xFFF
+        self.PC = BitArray(uint=val, length=12)
+
+    def GPR_OP_TO_OPR(self):
+        pass
     
 
     

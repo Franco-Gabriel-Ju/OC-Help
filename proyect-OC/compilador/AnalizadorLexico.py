@@ -1,7 +1,6 @@
 import ply.lex as lex
 import re
 
-# Lista de tokens
 tokens = (
     'ACC',
     'AD',
@@ -21,46 +20,41 @@ tokens = (
     'ONE',
     'PLUS',
     'ARROW',
-    'ZERO'
+    'ZERO',
 )
 
-# Palabras clave
+# Palabras clave — orden importa: más largas primero para evitar conflictos
+t_MAR = r'MAR'
 t_ACC = r'ACC'
 t_GPR = r'GPR'
-t_MAR = r'MAR'
-t_M = r'M'
 t_ROL = r'ROL'
 t_ROR = r'ROR'
-t_F = r'F'
-t_AD = r'AD'
-t_OP = r'OP'
-t_PC = r'PC'
 t_OPR = r'OPR'
+t_AD  = r'AD'
+t_OP  = r'OP'
+t_PC  = r'PC'
+t_M   = r'M'
+t_F   = r'F'
 
 # Símbolos
-t_NOT = r'!'
-t_COMMA = r','
+t_NOT    = r'!'
+t_COMMA  = r','
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_ONE = r'1'
-t_ZERO= r'0'
-t_PLUS = r'\+'
-t_ARROW = r'->|:=|:'
+t_ONE    = r'1'
+t_ZERO   = r'0'
+t_PLUS   = r'\+'
+t_ARROW  = r'->|:=|<-|:'
 
-# Ignorar espacios y tabs
 t_ignore = ' \t'
 
-# Manejar saltos de línea (para vacío)
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-# Error léxico
 def t_error(t):
-    print("Caracter ilegal:", t.value[0])
+    print(f"  [Léxico] Línea {t.lexer.lineno}: carácter ilegal '{t.value[0]}'")
     t.lexer.skip(1)
 
 
 lexer = lex.lex(reflags=re.IGNORECASE)
-
-
