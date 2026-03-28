@@ -2,36 +2,8 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
-def _bootstrap_tk_libraries():
-    if os.environ.get("TCL_LIBRARY") and os.environ.get("TK_LIBRARY"):
-        return
-
-    candidate_roots = []
-    for root in (getattr(sys, "base_prefix", ""), getattr(sys, "exec_prefix", ""), os.path.dirname(sys.executable)):
-        if root and root not in candidate_roots:
-            candidate_roots.append(root)
-
-    for root in candidate_roots:
-        tcl_dir = os.path.join(root, "tcl", "tcl8.6")
-        tk_dir = os.path.join(root, "tcl", "tk8.6")
-        init_tcl = os.path.join(tcl_dir, "init.tcl")
-        tk_tcl = os.path.join(tk_dir, "tk.tcl")
-
-        if os.path.isfile(init_tcl):
-            os.environ.setdefault("TCL_LIBRARY", tcl_dir)
-        if os.path.isfile(tk_tcl):
-            os.environ.setdefault("TK_LIBRARY", tk_dir)
-
-        if os.environ.get("TCL_LIBRARY") and os.environ.get("TK_LIBRARY"):
-            return
-
-
-_bootstrap_tk_libraries()
-
 import tkinter as tk
 from tkinter import ttk
-from tkinter import font as tkfont
 from tkinter import messagebox
 from bitstring import BitArray
 from modelo.Von_Neumann import VonNeuman
@@ -47,16 +19,9 @@ class CPU_UI:
         self.root = root
         self.prefs = PreferencesManager()
         self._theme_mode = self.prefs.get("theme", "mode")
-        self._zoom_percent = self.prefs.get("ui", "zoom_percent")
         self._theme_colors = {}
         self._status_label = None
         self._instruccion_label = None
-        self._gen_entry = None
-        self._gen_hint_label = None
-        self._gen_result_label = None
-        self._base_tk_scaling = float(self.root.tk.call("tk", "scaling"))
-        self._base_named_font_sizes = self._capturar_tamanos_fuente_base()
-        self._aplicar_zoom_global(self._zoom_percent)
         self.configurar_ventana()
         self.crear_menubar()
         self.cpu = VonNeuman()
@@ -84,54 +49,6 @@ class CPU_UI:
         self.root.title("Simulador CPU")
         self.root.geometry("1100x700")
 
-    def _capturar_tamanos_fuente_base(self):
-        names = [
-            "TkDefaultFont",
-            "TkTextFont",
-            "TkFixedFont",
-            "TkMenuFont",
-            "TkHeadingFont",
-            "TkCaptionFont",
-            "TkSmallCaptionFont",
-            "TkIconFont",
-            "TkTooltipFont",
-        ]
-        sizes = {}
-        for name in names:
-            try:
-                sizes[name] = int(tkfont.nametofont(name).cget("size"))
-            except (tk.TclError, ValueError, TypeError):
-                continue
-        return sizes
-
-    def _aplicar_zoom_global(self, zoom_percent):
-        try:
-            zoom_percent = int(zoom_percent)
-        except (TypeError, ValueError):
-            zoom_percent = 100
-
-        zoom_percent = max(80, min(200, zoom_percent))
-        self._zoom_percent = zoom_percent
-        factor = zoom_percent / 100.0
-
-        try:
-            self.root.tk.call("tk", "scaling", self._base_tk_scaling * factor)
-        except tk.TclError:
-            pass
-
-        for name, base_size in self._base_named_font_sizes.items():
-            try:
-                named_font = tkfont.nametofont(name)
-            except tk.TclError:
-                continue
-
-            sign = -1 if base_size < 0 else 1
-            scaled_abs = max(7, int(round(abs(base_size) * factor)))
-            named_font.configure(size=sign * scaled_abs)
-
-    def _scaled_size(self, base_size, min_size=7):
-        return max(min_size, int(round(base_size * (self._zoom_percent / 100.0))))
-
     def crear_menubar(self):
         menubar = tk.Menu(self.root)
 
@@ -150,10 +67,6 @@ class CPU_UI:
         menu_ver = tk.Menu(menubar, tearoff=0)
         menu_ver.add_command(label="Tema claro", command=lambda: self._set_theme_from_menu("light"))
         menu_ver.add_command(label="Tema oscuro", command=lambda: self._set_theme_from_menu("dark"))
-        menu_ver.add_separator()
-        menu_ver.add_command(label="Zoom +", command=lambda: self._adjust_zoom(10))
-        menu_ver.add_command(label="Zoom -", command=lambda: self._adjust_zoom(-10))
-        menu_ver.add_command(label="Zoom 100%", command=self._reset_zoom)
 
         menu_ejecutar = tk.Menu(menubar, tearoff=0)
         menu_ejecutar.add_command(label="Ejecutar 1 instruccion", command=self.ejecutar_una)
@@ -214,9 +127,7 @@ class CPU_UI:
         editor_frame.rowconfigure(0, weight=1)
 
         font_family = self.prefs.get("editor", "font_family")
-        font_size_base = self.prefs.get("editor", "font_size")
-        font_size = self._scaled_size(font_size_base, min_size=8)
-        tooltip_size = self._scaled_size(max(8, font_size_base - 2), min_size=7)
+        font_size = self.prefs.get("editor", "font_size")
 
         self._line_number_bg = "lightgray"
 
@@ -259,7 +170,7 @@ class CPU_UI:
         self.tooltip_lbl = tk.Label(
             self.autocomplete_popup,
             textvariable=self.tooltip_var,
-            font=(font_family, tooltip_size),
+            font=(font_family, max(8, font_size - 2)),
             bg="#ffffcc",
             fg="#000000",
             anchor="w",
@@ -438,16 +349,14 @@ class CPU_UI:
         inferir_btn = ttk.Button(btn_frame, text="Inferir instrucción", command=self.inferir_instruccion)
         inferir_btn.grid(row=0, column=2, padx=4)
 
-        font_family = self.prefs.get("editor", "font_family")
-
         self.estado_var = tk.StringVar(value="Listo.")
         self._status_label = ttk.Label(bottom, textvariable=self.estado_var, anchor="w",
-                   foreground="gray", font=(font_family, self._scaled_size(9)))
+                           foreground="gray", font=("Courier", 9))
         self._status_label.grid(row=2, column=0, columnspan=2, sticky="ew", padx=4)
 
         self.instruccion_var = tk.StringVar(value="")
         self._instruccion_label = ttk.Label(bottom, textvariable=self.instruccion_var, anchor="w",
-                    font=(font_family, self._scaled_size(12), "bold"), foreground="blue")
+                            font=("Courier", 12, "bold"), foreground="blue")
         self._instruccion_label.grid(row=3, column=0, columnspan=2, sticky="ew", padx=4, pady=(2, 4))
 
         # ── Panel generador: instrucción → microoperaciones ──────────
@@ -462,27 +371,23 @@ class CPU_UI:
         ttk.Label(gen_input_frame, text="Instrucción:").grid(row=0, column=0, sticky="w")
 
         self.gen_var = tk.StringVar()
-        self._gen_entry = ttk.Entry(gen_input_frame, textvariable=self.gen_var,
-                        font=(font_family, self._scaled_size(10)), width=35)
-        self._gen_entry.grid(row=1, column=0, sticky="ew", padx=(0, 4))
-        self._gen_entry.bind("<Return>", lambda e: self.generar_microops())
+        gen_entry = ttk.Entry(gen_input_frame, textvariable=self.gen_var,
+                              font=("Courier", 10), width=35)
+        gen_entry.grid(row=1, column=0, sticky="ew", padx=(0, 4))
+        gen_entry.bind("<Return>", lambda e: self.generar_microops())
 
         gen_btn = ttk.Button(gen_input_frame, text="Generar", command=self.generar_microops)
         gen_btn.grid(row=1, column=1)
 
-        self._gen_hint_label = ttk.Label(
-            gen_input_frame,
-            text="Ej: ACC <- 8*ACC + 2  |  M <- 3*M - ACC  |  M <- -4*M",
-            foreground="gray",
-            font=(font_family, self._scaled_size(8)),
-        )
-        self._gen_hint_label.grid(row=2, column=0, columnspan=2, sticky="w")
+        ttk.Label(gen_input_frame,
+                  text="Ej: ACC <- 8*ACC + 2  |  M <- 3*M - ACC  |  M <- -4*M",
+                  foreground="gray", font=("Courier", 8)).grid(row=2, column=0, columnspan=2, sticky="w")
 
         self.gen_resultado_var = tk.StringVar(value="")
-        self._gen_result_label = ttk.Label(gen_frame, textvariable=self.gen_resultado_var,
-                                           font=(font_family, self._scaled_size(9)), foreground="darkgreen",
-                                           anchor="w", justify="left")
-        self._gen_result_label.pack(fill="x", pady=(4, 0))
+        gen_resultado_lbl = ttk.Label(gen_frame, textvariable=self.gen_resultado_var,
+                                      font=("Courier", 9), foreground="darkgreen",
+                                      anchor="w", justify="left")
+        gen_resultado_lbl.pack(fill="x", pady=(4, 0))
 
     def crear_resultados(self, parent):
         results = ttk.LabelFrame(parent, text="Resultados", padding=10)
@@ -627,10 +532,7 @@ class CPU_UI:
 
     def mostrar_estado(self, mensaje, error=False):
         self.estado_var.set(mensaje)
-        if not self._theme_colors:
-            color = "red" if error else "green"
-        else:
-            color = self._theme_colors["error"] if error else self._theme_colors["success"]
+        color = "red" if error else "green"
         if self._status_label is not None:
             self._status_label.config(foreground=color)
 
@@ -645,40 +547,15 @@ class CPU_UI:
         self.prefs.save()
         self.on_preferences_changed()
 
-    def _adjust_zoom(self, step):
-        current = self.prefs.get("ui", "zoom_percent")
-        self.prefs.set("ui", "zoom_percent", current + step)
-        self.prefs.save()
-        self.on_preferences_changed()
-
-    def _reset_zoom(self):
-        self.prefs.set("ui", "zoom_percent", 100)
-        self.prefs.save()
-        self.on_preferences_changed()
-
     def on_preferences_changed(self):
         self._theme_mode = self.prefs.get("theme", "mode")
-        self._aplicar_zoom_global(self.prefs.get("ui", "zoom_percent"))
         font_family = self.prefs.get("editor", "font_family")
-        font_size_base = self.prefs.get("editor", "font_size")
-        font_size = self._scaled_size(font_size_base, min_size=8)
-        tooltip_size = self._scaled_size(max(8, font_size_base - 2), min_size=7)
+        font_size = self.prefs.get("editor", "font_size")
 
         self.code.config(font=(font_family, font_size))
         self.line_numbers.config(font=(font_family, font_size))
         self.autocomplete_list.config(font=(font_family, font_size))
-        self.tooltip_lbl.config(font=(font_family, tooltip_size))
-
-        if self._status_label is not None:
-            self._status_label.config(font=(font_family, self._scaled_size(9)))
-        if self._instruccion_label is not None:
-            self._instruccion_label.config(font=(font_family, self._scaled_size(12), "bold"))
-        if self._gen_entry is not None:
-            self._gen_entry.config(font=(font_family, self._scaled_size(10)))
-        if self._gen_hint_label is not None:
-            self._gen_hint_label.config(font=(font_family, self._scaled_size(8)))
-        if self._gen_result_label is not None:
-            self._gen_result_label.config(font=(font_family, self._scaled_size(9)))
+        self.tooltip_lbl.config(font=(font_family, max(8, font_size - 2)))
 
         self.aplicar_tema(self._theme_mode)
 

@@ -214,9 +214,7 @@ class CPU_UI:
         editor_frame.rowconfigure(0, weight=1)
 
         font_family = self.prefs.get("editor", "font_family")
-        font_size_base = self.prefs.get("editor", "font_size")
-        font_size = self._scaled_size(font_size_base, min_size=8)
-        tooltip_size = self._scaled_size(max(8, font_size_base - 2), min_size=7)
+        font_size = self.prefs.get("editor", "font_size")
 
         self._line_number_bg = "lightgray"
 
@@ -259,7 +257,7 @@ class CPU_UI:
         self.tooltip_lbl = tk.Label(
             self.autocomplete_popup,
             textvariable=self.tooltip_var,
-            font=(font_family, tooltip_size),
+            font=(font_family, max(8, font_size - 2)),
             bg="#ffffcc",
             fg="#000000",
             anchor="w",
@@ -438,16 +436,14 @@ class CPU_UI:
         inferir_btn = ttk.Button(btn_frame, text="Inferir instrucción", command=self.inferir_instruccion)
         inferir_btn.grid(row=0, column=2, padx=4)
 
-        font_family = self.prefs.get("editor", "font_family")
-
         self.estado_var = tk.StringVar(value="Listo.")
         self._status_label = ttk.Label(bottom, textvariable=self.estado_var, anchor="w",
-                   foreground="gray", font=(font_family, self._scaled_size(9)))
+                           foreground="gray", font=("Courier", 9))
         self._status_label.grid(row=2, column=0, columnspan=2, sticky="ew", padx=4)
 
         self.instruccion_var = tk.StringVar(value="")
         self._instruccion_label = ttk.Label(bottom, textvariable=self.instruccion_var, anchor="w",
-                    font=(font_family, self._scaled_size(12), "bold"), foreground="blue")
+                            font=("Courier", 12, "bold"), foreground="blue")
         self._instruccion_label.grid(row=3, column=0, columnspan=2, sticky="ew", padx=4, pady=(2, 4))
 
         # ── Panel generador: instrucción → microoperaciones ──────────
@@ -462,27 +458,23 @@ class CPU_UI:
         ttk.Label(gen_input_frame, text="Instrucción:").grid(row=0, column=0, sticky="w")
 
         self.gen_var = tk.StringVar()
-        self._gen_entry = ttk.Entry(gen_input_frame, textvariable=self.gen_var,
-                        font=(font_family, self._scaled_size(10)), width=35)
-        self._gen_entry.grid(row=1, column=0, sticky="ew", padx=(0, 4))
-        self._gen_entry.bind("<Return>", lambda e: self.generar_microops())
+        gen_entry = ttk.Entry(gen_input_frame, textvariable=self.gen_var,
+                              font=("Courier", 10), width=35)
+        gen_entry.grid(row=1, column=0, sticky="ew", padx=(0, 4))
+        gen_entry.bind("<Return>", lambda e: self.generar_microops())
 
         gen_btn = ttk.Button(gen_input_frame, text="Generar", command=self.generar_microops)
         gen_btn.grid(row=1, column=1)
 
-        self._gen_hint_label = ttk.Label(
-            gen_input_frame,
-            text="Ej: ACC <- 8*ACC + 2  |  M <- 3*M - ACC  |  M <- -4*M",
-            foreground="gray",
-            font=(font_family, self._scaled_size(8)),
-        )
-        self._gen_hint_label.grid(row=2, column=0, columnspan=2, sticky="w")
+        ttk.Label(gen_input_frame,
+                  text="Ej: ACC <- 8*ACC + 2  |  M <- 3*M - ACC  |  M <- -4*M",
+                  foreground="gray", font=("Courier", 8)).grid(row=2, column=0, columnspan=2, sticky="w")
 
         self.gen_resultado_var = tk.StringVar(value="")
-        self._gen_result_label = ttk.Label(gen_frame, textvariable=self.gen_resultado_var,
-                                           font=(font_family, self._scaled_size(9)), foreground="darkgreen",
-                                           anchor="w", justify="left")
-        self._gen_result_label.pack(fill="x", pady=(4, 0))
+        gen_resultado_lbl = ttk.Label(gen_frame, textvariable=self.gen_resultado_var,
+                                      font=("Courier", 9), foreground="darkgreen",
+                                      anchor="w", justify="left")
+        gen_resultado_lbl.pack(fill="x", pady=(4, 0))
 
     def crear_resultados(self, parent):
         results = ttk.LabelFrame(parent, text="Resultados", padding=10)
@@ -658,27 +650,13 @@ class CPU_UI:
 
     def on_preferences_changed(self):
         self._theme_mode = self.prefs.get("theme", "mode")
-        self._aplicar_zoom_global(self.prefs.get("ui", "zoom_percent"))
         font_family = self.prefs.get("editor", "font_family")
-        font_size_base = self.prefs.get("editor", "font_size")
-        font_size = self._scaled_size(font_size_base, min_size=8)
-        tooltip_size = self._scaled_size(max(8, font_size_base - 2), min_size=7)
+        font_size = self.prefs.get("editor", "font_size")
 
         self.code.config(font=(font_family, font_size))
         self.line_numbers.config(font=(font_family, font_size))
         self.autocomplete_list.config(font=(font_family, font_size))
-        self.tooltip_lbl.config(font=(font_family, tooltip_size))
-
-        if self._status_label is not None:
-            self._status_label.config(font=(font_family, self._scaled_size(9)))
-        if self._instruccion_label is not None:
-            self._instruccion_label.config(font=(font_family, self._scaled_size(12), "bold"))
-        if self._gen_entry is not None:
-            self._gen_entry.config(font=(font_family, self._scaled_size(10)))
-        if self._gen_hint_label is not None:
-            self._gen_hint_label.config(font=(font_family, self._scaled_size(8)))
-        if self._gen_result_label is not None:
-            self._gen_result_label.config(font=(font_family, self._scaled_size(9)))
+        self.tooltip_lbl.config(font=(font_family, max(8, font_size - 2)))
 
         self.aplicar_tema(self._theme_mode)
 
