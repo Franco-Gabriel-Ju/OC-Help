@@ -119,25 +119,10 @@ def p_error(p):
         print("  [Sintaxis] Error al final del programa (instrucción incompleta)")
 
 
-# En el ejecutable onefile, escribir parser.out en _MEI puede fallar.
-# Desactivamos escritura de tablas/debug y usamos logger nulo para evitar
-# excepciones internas de PLY al reportar warnings de E/S.
+# En ejecutables onefile (PyInstaller), PLY puede fallar al intentar crear
+# parser.out/parsetab o escribir avisos en stderr (windowed => stderr=None).
 parser = yacc.yacc(
     debug=False,
     write_tables=False,
     errorlog=yacc.NullLogger(),
 )
-
-
-def preprocesar_linea_microop(linea: str) -> str:
-    """
-    Quita comentarios desde ';' hasta el fin de línea (estilo ensamblador).
-    Sin esto, una anotación como «GPR+ACC -> ACC  ; 3M» hace fallar el léxico
-    y la línea completa se ignora al inferir o ejecutar.
-    """
-    linea = linea.strip()
-    if not linea:
-        return linea
-    if ";" in linea:
-        linea = linea.split(";", 1)[0].strip()
-    return linea

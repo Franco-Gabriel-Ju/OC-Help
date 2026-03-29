@@ -46,9 +46,21 @@ class VonNeuman:
         self.M   = BitArray(uint=0, length=12)   # Registro de memoria (12 bits)
         self.MAR = BitArray(uint=0, length=12)   # Memory Address Register
         self.PC  = BitArray(uint=0, length=12)   # Program Counter
+        self.OPR = BitArray(uint=0, length=12)   # registro de operación (apuntes / traza)
+        self.GPR_AD = BitArray(uint=0, length=12)  # campo dirección (visualización)
+        self.GPR_OP = BitArray(uint=0, length=12)  # campo operando (visualización)
         self.RAM = Memoria()                     # RAM: instancia de Memoria (array de BitArray)
 
     # Nota: quitadas las funciones get_/set_. Usar los atributos públicos: ACC, F, GPR, M, RAM
+    # Formato IR (apuntes / Ejemplo 1): 12 bits = 4 bits código OP + 8 bits dirección AD.
+
+    def _sync_ir_fields(self):
+        """Actualiza GPR(OP) y GPR(AD) según el contenido actual de GPR."""
+        w = self.GPR.uint & 0xFFF
+        op_n = (w >> 8) & 0xF
+        ad_n = w & 0xFF
+        self.GPR_OP = BitArray(uint=op_n, length=12)
+        self.GPR_AD = BitArray(uint=ad_n, length=12)
 
     def ROL_F_ACC(self):
         concatenacion = self.F + self.ACC
@@ -76,9 +88,11 @@ class VonNeuman:
     def INC_GPR(self):
         suma = (self.GPR.uint + 1) & 0xFFF
         self.GPR = BitArray(uint=suma, length=12)
-    
+        self._sync_ir_fields()
+
     def ACC_TO_GPR(self):
         self.GPR = self.ACC.copy()
+        self._sync_ir_fields()
 
     def GPR_TO_ACC(self):
         self.ACC = self.GPR.copy()
@@ -99,25 +113,32 @@ class VonNeuman:
         self.F = BitArray(uint=0, length=1)
 
     def GPR_AD_TO_MAR(self):
-        self.M = self.RAM.leer(self.GPR.uint)
+        # Campo AD (8 bits bajos del IR / GPR) → MAR; lectura en M (Ejemplo 1 y ejercicios directos).
+        ad = self.GPR.uint & 0xFF
+        self.MAR = BitArray(uint=ad, length=12)
+        self._sync_ir_fields()
+        self.M = self.RAM.leer(ad)
 
     def GPR_TO_M(self):
         self.M = self.GPR.copy()
     
     def M_TO_GPR(self):
         self.GPR = self.M.copy()
+        self._sync_ir_fields()
 
     def PC_TO_MAR(self):
+        # Solo captación de dirección y dato en M; GPR se carga en el siguiente paso (filmina Ej. 1).
         self.MAR = self.PC.copy()
         self.M = self.RAM.leer(self.PC.uint)
-        self.GPR = self.M.copy()
 
     def INC_PC(self):
         val = (self.PC.uint + 1) & 0xFFF
         self.PC = BitArray(uint=val, length=12)
 
     def GPR_OP_TO_OPR(self):
-        pass
+        op_n = (self.GPR.uint >> 8) & 0xF
+        self.OPR = BitArray(uint=op_n, length=12)
+        self._sync_ir_fields()
     
 
     
