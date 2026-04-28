@@ -1,0 +1,2 @@
+-r calculadora/web/requirements.txt
+gunicorn>=22,<23

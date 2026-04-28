@@ -126,6 +126,9 @@ class VonNeuman:
         self.GPR = self.M.copy()
         self._sync_ir_fields()
 
+    def M_TO_ACC(self):
+        self.ACC = self.M.copy()
+
     def PC_TO_MAR(self):
         # Solo captación de dirección y dato en M; GPR se carga en el siguiente paso (filmina Ej. 1).
         self.MAR = self.PC.copy()

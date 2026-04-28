@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 
-from sympy import symbols, simplify, factor, Not, Symbol, collect, expand
+from sympy import symbols, simplify, factor, Not, Symbol, collect, expand, sympify
 from sympy import Rational, Integer
 from sympy.printing import sstr
 
@@ -35,6 +35,28 @@ _PLANTILLA_DIV4_MENOS_F_M = _PLANTILLA_DIV4_MENOS_F_NUCLEO + ("ACC_TO_GPR", "GPR
 
 # Prefijo fetch atómico (misma convención que Generador.FETCH_CICLO_INSTRUCCION).
 _FETCH_ATOMICA = ("PC_TO_MAR", "M_TO_GPR", "INC_PC", "GPR_OP_TO_OPR")
+
+_MAPA_TEXTO_A_INTERNO = {
+    "PC -> MAR": "PC_TO_MAR",
+    "M -> GPR, PC+1->PC": "M_TO_GPR_INC_PC",
+    "M -> GPR": "M_TO_GPR",
+    "M -> ACC": "M_TO_ACC",
+    "GPR(OP) -> OPR": "GPR_OP_TO_OPR",
+    "GPR(AD) -> MAR": "GPR_AD_TO_MAR",
+    "ACC -> GPR": "ACC_TO_GPR",
+    "GPR -> ACC": "GPR_TO_ACC",
+    "GPR -> M": "GPR_TO_M",
+    "ACC+GPR -> ACC": "SUM_ACC_GPR",
+    "GPR+ACC -> ACC": "SUM_ACC_GPR",
+    "ACC+1 -> ACC": "INC_ACC",
+    "GPR+1 -> GPR": "INC_GPR",
+    "ACC! -> ACC": "NOT_ACC",
+    "F! -> F": "NOT_F",
+    "0 -> ACC": "ZERO_ACC",
+    "0 -> F": "ZERO_F",
+    "ROL F, ACC": "ROL_F_ACC",
+    "ROR F, ACC": "ROR_F_ACC",
+}
 
 
 def _ops_tras_fetch_si_hay(ops: list) -> list:
@@ -171,6 +193,74 @@ def _not12(expr):
     return -expr - 1
 
 
+def _parsear_instruccion_objetivo(instruccion: str):
+    if "<-" not in instruccion:
+        return None, None
+    dest_raw, expr_raw = instruccion.split("<-", 1)
+    destino = dest_raw.strip().upper()
+    if destino not in ("ACC", "M", "GPR"):
+        return None, None
+    expr_txt = expr_raw.strip()
+    expr_txt = re.sub(r"\b(acc|gpr|m|f)\b", lambda m: m.group().upper(), expr_txt, flags=re.IGNORECASE)
+    expr_txt = re.sub(r"(\d)(ACC|GPR|M\b|F\b)", r"\1*\2", expr_txt)
+    try:
+        expr = expand(sympify(expr_txt, locals={"ACC": ACC0, "GPR": GPR0, "M": M0, "F": F0}))
+    except Exception:
+        return None, None
+    return destino, expr
+
+
+def _extraer_expr_inferida(resultado_inferido: str, destino: str):
+    partes = [p.strip() for p in resultado_inferido.split("|")]
+    pref = f"{destino} <-"
+    for p in partes:
+        if not p.startswith(pref):
+            continue
+        rhs = p[len(pref):].strip()
+        if rhs.startswith("canónica:"):
+            rhs = rhs[len("canónica:"):].strip()
+            if "  equivalente:" in rhs:
+                rhs = rhs.split("  equivalente:", 1)[0].strip()
+        rhs = re.sub(r"(\d)(ACC|GPR|M\b|F\b)", r"\1*\2", rhs)
+        try:
+            return expand(sympify(rhs, locals={"ACC": ACC0, "GPR": GPR0, "M": M0, "F": F0}))
+        except Exception:
+            return None
+    return None
+
+
+def verificar_equivalencia(instruccion: str, microops_texto: list[str]) -> tuple[bool, str]:
+    """
+    Verifica por equivalencia algebraica si una secuencia de microops implementa la instrucción.
+    Compara la expresión objetivo contra la inferida simbólicamente.
+    """
+    destino, expr_obj = _parsear_instruccion_objetivo(instruccion)
+    if destino is None or expr_obj is None:
+        return False, "No se pudo parsear la instrucción objetivo."
+
+    ops_internas: list[str] = []
+    for op in microops_texto:
+        txt = (op or "").strip()
+        if not txt:
+            continue
+        cod = _MAPA_TEXTO_A_INTERNO.get(txt)
+        if cod is None:
+            return False, f"Microoperación no reconocida para verificación: {txt}"
+        if cod == "M_TO_GPR_INC_PC":
+            ops_internas.extend(["M_TO_GPR", "INC_PC"])
+        else:
+            ops_internas.append(cod)
+
+    resultado = inferir(ops_internas)
+    expr_inf = _extraer_expr_inferida(resultado, destino)
+    if expr_inf is None:
+        return False, f"No se pudo inferir expresión para {destino}. Inferido: {resultado}"
+
+    if expand(expr_obj - expr_inf) == 0:
+        return True, resultado
+    return False, f"Objetivo: {destino} <- {_expr_string_canonica(expr_obj)} | Inferido: {resultado}"
+
+
 def inferir(ops: list) -> str:
     """
     Simula simbólicamente la secuencia de ops y devuelve la instrucción
@@ -297,6 +387,9 @@ def inferir(ops: list) -> str:
 
         elif op == "M_TO_GPR":
             state["GPR"] = state["M"]
+
+        elif op == "M_TO_ACC":
+            state["ACC"] = state["M"]
 
         elif op == "GPR_TO_M":
             state["M"] = state["GPR"]

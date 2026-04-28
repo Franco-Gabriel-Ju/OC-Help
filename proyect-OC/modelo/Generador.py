@@ -209,6 +209,37 @@ def generar(expresion: str, modo: str | None = None) -> list:
         ops += ["0 -> F", "ROR F, ACC"]
         return _finalizar(ops, modo_n)
 
+    # ACC <- ACC/2 + cf*F + K (interpretación cátedra): F es {0,1} estable y cf*F es aritmético.
+    # Estrategia: guardar ACC en M, capturar F en ACC (0; ROL), escalar por cf,
+    # guardar ese término en GPR, restaurar ACC y dividir por 2 con F=0, sumar, y ajustar K.
+    if destino_str == "ACC" and expr.coeff(ACC) == Rational(1, 2) and F_sym in expr.free_symbols:
+        resto_acc_half = expand(expr - Rational(1, 2) * ACC - coef_f_expr * F_sym)
+        if (
+            coef_f_expr != Integer(0)
+            and coef_f_expr != Integer(2048)
+            and not resto_acc_half.free_symbols
+            and _es_coeficiente_entero_sympy(coef_f_expr)
+            and _es_coeficiente_entero_sympy(resto_acc_half)
+        ):
+            cf_i = int(coef_f_expr)
+            k_i = int(resto_acc_half)
+            ops = [
+                "ACC -> GPR",
+                "GPR -> M",
+                "0 -> ACC",
+                "ROL F, ACC",   # ACC = F (0/1), F queda 0
+            ]
+            ops += _multiplicar_ACC_sin_memoria_M(cf_i)  # ACC = cf*F (cátedra)
+            ops += [
+                "ACC -> GPR",   # guardar término cf*F
+                "M -> ACC",     # restaurar ACC original
+                "0 -> F",
+                "ROR F, ACC",   # ACC = ACC/2 (lógico)
+                "GPR+ACC -> ACC",
+            ]
+            ops += _agregar_constante(k_i)
+            return _finalizar(ops, modo_n)
+
     # ACC <- 2*ACC + F  →  ROL F, ACC
     if destino_str == "ACC" and coef_f_expr == 1 and expr.coeff(ACC) == 2:
         ops.append("ROL F, ACC")

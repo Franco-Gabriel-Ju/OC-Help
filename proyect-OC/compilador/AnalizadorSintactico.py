@@ -31,6 +31,7 @@ def p_accion(p):
               | GPR ARROW ACC
               | GPR ARROW M
               | M ARROW GPR
+              | M ARROW ACC
               | GPR LPAREN AD RPAREN ARROW MAR
               | GPR LPAREN AD RPAREN ARROW OPR
               | GPR LPAREN OP RPAREN ARROW OPR
@@ -89,7 +90,10 @@ def p_accion(p):
         elif t1 == 'GPR' and p.slice[3].type == 'M':
             p[0] = ("GPR_TO_M",)
         elif t1 == 'M':
-            p[0] = ("M_TO_GPR",)
+            if p.slice[3].type == 'GPR':
+                p[0] = ("M_TO_GPR",)
+            else:
+                p[0] = ("M_TO_ACC",)
         elif t1 == 'PC' and p.slice[3].type == 'MAR':
             p[0] = ("PC_TO_MAR",)
 

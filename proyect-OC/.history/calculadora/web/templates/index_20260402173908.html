@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora OC Web</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Calculadora OC Web</h1>
+      <p>Conversiones numéricas y operaciones NC</p>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="calc">Calculadora</button>
+      <button class="tab" data-tab="nc2nc">NC -> NC</button>
+      <button class="tab" data-tab="nc2cs">NC -> CS</button>
+      <button class="tab" data-tab="suma">Suma NC</button>
+      <button class="tab" data-tab="manual">Resolucion Manual</button>
+    </nav>
+
+    <main class="content">
+      <section class="panel active" id="panel-calc">
+        <h2>Calculadora de Conversion</h2>
+
+        <div class="calc-controls">
+          <label class="inline toggle-btn"><input id="calc-redondear" type="checkbox" checked /> Redondear</label>
+          <label>Fracciones <input id="calc-precision" type="number" min="0" max="16" value="4" /></label>
+          <label>Sep.
+            <select id="calc-separador">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+          <label class="inline toggle-btn"><input id="calc-entrada-comp" type="checkbox" /> Valor ya complementado</label>
+          <label class="inline toggle-btn"><input id="calc-nc-fijo" type="checkbox" /> NC fijo</label>
+          <label>Base NC
+            <select id="calc-base-nc">
+              <option value="10">DEC</option>
+              <option value="2">BIN</option>
+              <option value="16">HEX</option>
+              <option value="8">OCT</option>
+            </select>
+          </label>
+          <label>E <input id="calc-e" type="number" min="1" max="32" value="5" /></label>
+          <label>F <input id="calc-f" type="number" min="0" max="16" value="2" /></label>
+          <label class="inline toggle-btn"><input id="calc-complemento" type="checkbox" /> Aplicar complemento</label>
+        </div>
+
+        <div class="calc-entry-row">
+          <label class="grow">Entrada <input id="calc-numero" type="text" placeholder="Escribe un numero" /></label>
+          <label>Base
+            <select id="calc-base-origen">
+              <option value="10">DEC</option>
+              <option value="2">BIN</option>
+              <option value="16">HEX</option>
+              <option value="8">OCT</option>
+            </select>
+          </label>
+          <button id="calc-run">Convertir</button>
+        </div>
+
+        <div class="calc-main-grid">
+          <div class="calc-outputs">
+            <div class="out-row">
+              <span class="tag dec">DEC</span>
+              <input id="out-dec" readonly />
+              <button class="usar-btn" data-out="DEC">Usar</button>
+            </div>
+            <div class="out-row">
+              <span class="tag bin">BIN</span>
+              <input id="out-bin" readonly />
+              <button class="usar-btn" data-out="BIN">Usar</button>
+            </div>
+            <div class="out-row">
+              <span class="tag hex">HEX</span>
+              <input id="out-hex" readonly />
+              <button class="usar-btn" data-out="HEX">Usar</button>
+            </div>
+            <div class="out-row">
+              <span class="tag oct">OCT</span>
+              <input id="out-oct" readonly />
+              <button class="usar-btn" data-out="OCT">Usar</button>
+            </div>
+          </div>
+
+          <div class="calc-keypad">
+            <button class="key" data-key="A">A</button>
+            <button class="key" data-key="B">B</button>
+            <button class="key" data-key="C">C</button>
+            <button class="key action" data-key="DEL">DEL</button>
+
+            <button class="key" data-key="D">D</button>
+            <button class="key" data-key="E">E</button>
+            <button class="key" data-key="F">F</button>
+            <button class="key action" data-key="AC">AC</button>
+
+            <button class="key" data-key="7">7</button>
+            <button class="key" data-key="8">8</button>
+            <button class="key" data-key="9">9</button>
+            <button class="key" data-key=",">,</button>
+
+            <button class="key" data-key="4">4</button>
+            <button class="key" data-key="5">5</button>
+            <button class="key" data-key="6">6</button>
+            <button class="key" data-key=".">.</button>
+
+            <button class="key" data-key="1">1</button>
+            <button class="key" data-key="2">2</button>
+            <button class="key" data-key="3">3</button>
+            <button class="key action" data-key="+/-">+/-</button>
+
+            <button class="key" data-key="0">0</button>
+            <button class="key" data-key="-">-</button>
+            <button class="key action" data-key="CPBIN">Copiar BIN</button>
+            <button class="key action" data-key="CPDEC">Copiar DEC</button>
+          </div>
+        </div>
+
+        <p id="calc-abrev" class="calc-abrev"></p>
+        <pre id="calc-status" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-nc2nc">
+        <h2>NC fijo -> NC fijo</h2>
+        <div class="grid">
+          <label>Entrada comp. <input id="nc2nc-numero" type="text" placeholder="Ej: 1F4A2,5C93" /></label>
+          <label>Base origen <input id="nc2nc-bo" type="number" min="2" max="36" value="16" /></label>
+          <label>E origen <input id="nc2nc-eo" type="number" min="1" value="5" /></label>
+          <label>F origen <input id="nc2nc-fo" type="number" min="0" value="4" /></label>
+          <label>Base destino <input id="nc2nc-bd" type="number" min="2" max="36" value="8" /></label>
+          <label>E destino <input id="nc2nc-ed" type="number" min="1" value="6" /></label>
+          <label>F destino <input id="nc2nc-fd" type="number" min="0" value="3" /></label>
+          <label>Separador
+            <select id="nc2nc-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+        </div>
+        <button id="nc2nc-run">Convertir NC -> NC</button>
+        <pre id="nc2nc-out" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-nc2cs">
+        <h2>NC -> CS (signo 0/1)</h2>
+        <div class="grid">
+          <label>Entrada comp. <input id="nc2cs-numero" type="text" placeholder="Ej: 1F4A2,5C93" /></label>
+          <label>Base <input id="nc2cs-base" type="number" min="2" max="36" value="16" /></label>
+          <label>E <input id="nc2cs-e" type="number" min="1" value="5" /></label>
+          <label>F <input id="nc2cs-f" type="number" min="0" value="4" /></label>
+          <label>Separador
+            <select id="nc2cs-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+        </div>
+        <button id="nc2cs-run">Convertir NC -> CS</button>
+        <pre id="nc2cs-out" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-suma">
+        <h2>Operaciones NC</h2>
+        <div class="grid">
+          <label>N1 (comp.) <input id="suma-n1" type="text" /></label>
+          <label>N2 (comp.) <input id="suma-n2" type="text" /></label>
+          <label>Base <input id="suma-base" type="number" min="2" max="36" value="10" /></label>
+          <label>E <input id="suma-e" type="number" min="1" value="5" /></label>
+          <label>F <input id="suma-f" type="number" min="0" value="2" /></label>
+          <label>Operacion
+            <select id="suma-op">
+              <option value="suma">N1 + N2</option>
+              <option value="resta">N1 - N2 (N1 + N2!)</option>
+            </select>
+          </label>
+          <label>Separador
+            <select id="suma-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+        </div>
+        <button id="suma-run">Calcular</button>
+        <pre id="suma-out" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-manual">
+        <h2>Resolucion Manual del Conversor</h2>
+        <div class="grid">
+          <label>Numero <input id="manual-numero" type="text" placeholder="Ej: 1F4A2,5C93" /></label>
+          <label>Base origen <input id="manual-bo" type="number" min="2" max="36" value="16" /></label>
+          <label>Base destino <input id="manual-bd" type="number" min="2" max="36" value="8" /></label>
+          <label>Precision <input id="manual-precision" type="number" min="0" value="3" /></label>
+          <label>Separador
+            <select id="manual-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+          <label class="inline toggle-btn"><input id="manual-redondear" type="checkbox" checked /> Redondear</label>
+          <label class="inline toggle-btn"><input id="manual-entrada-comp" type="checkbox" /> Valor ya complementado</label>
+          <label class="inline toggle-btn"><input id="manual-complemento" type="checkbox" /> Aplicar complemento</label>
+          <label class="inline toggle-btn"><input id="manual-nc-fijo" type="checkbox" /> NC fijo</label>
+          <label>Base NC <input id="manual-bnc" type="number" min="2" max="36" value="16" /></label>
+          <label>E <input id="manual-e" type="number" min="1" value="5" /></label>
+          <label>F <input id="manual-f" type="number" min="0" value="4" /></label>
+        </div>
+        <button id="manual-run">Generar pasos</button>
+        <pre id="manual-out" class="output"></pre>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

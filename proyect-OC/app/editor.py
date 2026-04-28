@@ -1425,6 +1425,12 @@ class CPU_UI:
             modo_arg = None
         try:
             ops = generar(expresion, modo_arg)
+            ok, detalle = Inferidor.verificar_equivalencia(expresion, ops)
+            if not ok:
+                raise ErrorGeneracion(
+                    "La secuencia generada no cumple semánticamente la instrucción solicitada.\n"
+                    f"{detalle}"
+                )
             # Insertar en el editor
             self.code.delete("1.0", "end")
             self.code.insert("1.0", "\n".join(ops))

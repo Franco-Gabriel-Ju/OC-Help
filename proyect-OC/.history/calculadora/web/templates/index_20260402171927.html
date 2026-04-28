@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora OC Web</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Calculadora OC Web</h1>
+      <p>Conversiones numéricas y operaciones NC</p>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="calc">Calculadora</button>
+      <button class="tab" data-tab="nc2nc">NC -> NC</button>
+      <button class="tab" data-tab="nc2cs">NC -> CS</button>
+      <button class="tab" data-tab="suma">Suma NC</button>
+    </nav>
+
+    <main class="content">
+      <section class="panel active" id="panel-calc">
+        <h2>Calculadora de Bases</h2>
+        <div class="grid">
+          <label>Numero <input id="calc-numero" type="text" placeholder="Ej: -101,01" /></label>
+          <label>Base origen
+            <select id="calc-base-origen">
+              <option value="10">DEC</option>
+              <option value="2">BIN</option>
+              <option value="16">HEX</option>
+              <option value="8">OCT</option>
+            </select>
+          </label>
+          <label>Base destino
+            <select id="calc-base-destino">
+              <option value="2">BIN</option>
+              <option value="10">DEC</option>
+              <option value="16">HEX</option>
+              <option value="8">OCT</option>
+            </select>
+          </label>
+          <label>Precision <input id="calc-precision" type="number" min="0" value="4" /></label>
+          <label>Separador
+            <select id="calc-separador">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+          <label class="inline">
+            <input id="calc-complemento" type="checkbox" /> Aplicar complemento en negativos
+          </label>
+          <label>Enteros fijos (solo complemento)
+            <input id="calc-enteros-fijos" type="number" min="1" placeholder="Opcional" />
+          </label>
+        </div>
+        <button id="calc-run">Convertir</button>
+        <pre id="calc-out" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-nc2nc">
+        <h2>NC fijo -> NC fijo</h2>
+        <div class="grid">
+          <label>Entrada comp. <input id="nc2nc-numero" type="text" placeholder="Ej: 1F4A2,5C93" /></label>
+          <label>Base origen <input id="nc2nc-bo" type="number" min="2" max="36" value="16" /></label>
+          <label>E origen <input id="nc2nc-eo" type="number" min="1" value="5" /></label>
+          <label>F origen <input id="nc2nc-fo" type="number" min="0" value="4" /></label>
+          <label>Base destino <input id="nc2nc-bd" type="number" min="2" max="36" value="8" /></label>
+          <label>E destino <input id="nc2nc-ed" type="number" min="1" value="6" /></label>
+          <label>F destino <input id="nc2nc-fd" type="number" min="0" value="3" /></label>
+          <label>Separador
+            <select id="nc2nc-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+        </div>
+        <button id="nc2nc-run">Convertir NC -> NC</button>
+        <pre id="nc2nc-out" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-nc2cs">
+        <h2>NC -> CS (signo 0/1)</h2>
+        <div class="grid">
+          <label>Entrada comp. <input id="nc2cs-numero" type="text" placeholder="Ej: 1F4A2,5C93" /></label>
+          <label>Base <input id="nc2cs-base" type="number" min="2" max="36" value="16" /></label>
+          <label>E <input id="nc2cs-e" type="number" min="1" value="5" /></label>
+          <label>F <input id="nc2cs-f" type="number" min="0" value="4" /></label>
+          <label>Separador
+            <select id="nc2cs-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+        </div>
+        <button id="nc2cs-run">Convertir NC -> CS</button>
+        <pre id="nc2cs-out" class="output"></pre>
+      </section>
+
+      <section class="panel" id="panel-suma">
+        <h2>Operaciones NC</h2>
+        <div class="grid">
+          <label>N1 (comp.) <input id="suma-n1" type="text" /></label>
+          <label>N2 (comp.) <input id="suma-n2" type="text" /></label>
+          <label>Base <input id="suma-base" type="number" min="2" max="36" value="10" /></label>
+          <label>E <input id="suma-e" type="number" min="1" value="5" /></label>
+          <label>F <input id="suma-f" type="number" min="0" value="2" /></label>
+          <label>Operacion
+            <select id="suma-op">
+              <option value="suma">N1 + N2</option>
+              <option value="resta">N1 - N2 (N1 + N2!)</option>
+            </select>
+          </label>
+          <label>Separador
+            <select id="suma-sep">
+              <option value=",">,</option>
+              <option value=".">.</option>
+            </select>
+          </label>
+        </div>
+        <button id="suma-run">Calcular</button>
+        <pre id="suma-out" class="output"></pre>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

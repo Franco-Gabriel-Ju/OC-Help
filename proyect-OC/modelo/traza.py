@@ -25,6 +25,7 @@ _OP_TEXTO = {
     "GPR_AD_TO_MAR": "GPR(AD) -> MAR",
     "GPR_TO_M": "GPR -> M",
     "M_TO_GPR": "M -> GPR",
+    "M_TO_ACC": "M -> ACC",
     "PC_TO_MAR": "PC -> MAR",
     "GPR_OP_TO_OPR": "GPR(OP) -> OPR",
 }
@@ -189,6 +190,7 @@ def simular_traza(
         "GPR_AD_TO_MAR": VonNeuman.GPR_AD_TO_MAR,
         "GPR_TO_M": VonNeuman.GPR_TO_M,
         "M_TO_GPR": VonNeuman.M_TO_GPR,
+        "M_TO_ACC": VonNeuman.M_TO_ACC,
         "PC_TO_MAR": VonNeuman.PC_TO_MAR,
         "INC_PC": VonNeuman.INC_PC,
         "GPR_OP_TO_OPR": VonNeuman.GPR_OP_TO_OPR,
